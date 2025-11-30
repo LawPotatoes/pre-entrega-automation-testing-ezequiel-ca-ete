@@ -1,39 +1,52 @@
 # utils/cart_page.py
+
 from selenium.webdriver.common.by import By
 from utils.base_page import BasePage
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 class CartPage(BasePage):
-    # Localizadores
-    CART_TITLE = (By.CLASS_NAME, "title")
-    CART_ITEM_COUNT = (By.CLASS_NAME, "cart_item")
+    """
+    Page Object Model para la página del Carrito de Compras.
+    """
     
-    # Nombres de los productos que esperamos encontrar
-    BACKPACK_NAME = "Sauce Labs Backpack"
-    BIKE_LIGHT_NAME = "Sauce Labs Bike Light"
-
+    # --- Localizadores ---
+    
+    CART_URL = "cart.html"
+    HEADER_TITLE = (By.CLASS_NAME, "title")
+    CART_ITEM_LIST = (By.CLASS_NAME, "cart_list")
+    CART_ITEM = (By.CLASS_NAME, "cart_item")
+    CHECKOUT_BUTTON = (By.ID, "checkout") # <-- ¡El localizador clave!
+    
+    # --- Constructor ---
+    
     def __init__(self, driver):
         super().__init__(driver)
         
+    # --- Métodos de Validación y Acción ---
+    
     def wait_for_cart_page(self):
-        """Espera a que la página del carrito cargue y valida el título."""
-        WebDriverWait(self.driver, 10).until(
-            EC.url_contains("/cart.html")
-        )
-        return self.find_element(self.CART_TITLE).text
+        """Espera a que el carrito esté visible y verifica que la URL es correcta."""
+        self.wait_for_visibility(self.HEADER_TITLE)
+        assert self.CART_URL in self.driver.current_url, "No se cargó la página del carrito."
         
-    def get_item_names_in_cart(self):
-        """Devuelve una lista de los nombres de los productos en el carrito."""
-        # Se asume que los elementos están visibles después de wait_for_cart_page()
+    def get_cart_item_count(self):
+        """Cuenta la cantidad de ítems presentes en el carrito."""
+        # Se asume que get_cart_item_count regresa una lista de elementos
+        return len(self.driver.find_elements(*self.CART_ITEM))
         
-        # Encuentra todos los nombres de los productos
-        name_elements = self.driver.find_elements(By.CLASS_NAME, "inventory_item_name")
-        
-        # Retorna el texto de cada elemento en una lista
-        return [elem.text for elem in name_elements]
+    def get_item_names(self):
+        """Retorna una lista con los nombres de los ítems en el carrito."""
+        item_names = []
+        # Encuentra todos los elementos del carrito
+        items = self.driver.find_elements(*self.CART_ITEM)
+        for item in items:
+            # Dentro de cada ítem, busca el nombre del producto
+            name_element = item.find_element(By.CLASS_NAME, "inventory_item_name")
+            item_names.append(name_element.text)
+        return item_names
 
-    def check_product_quantities(self):
-        """Cuenta cuántos items diferentes están en el carrito."""
-        items = self.driver.find_elements(*self.CART_ITEM_COUNT)
-        return len(items)
+    # --- MÉTODO AGREGADO PARA EL PROYECTO FINAL ---
+    def click_checkout(self):
+        """
+        Hace clic en el botón 'Checkout' para iniciar el proceso de compra.
+        """
+        self.find_element(self.CHECKOUT_BUTTON).click()

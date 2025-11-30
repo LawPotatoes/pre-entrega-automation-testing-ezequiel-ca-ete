@@ -1,87 +1,84 @@
 # utils/inventory_page.py
+
 from selenium.webdriver.common.by import By
 from utils.base_page import BasePage
-from selenium.webdriver.support import expected_conditions as EC
+import logging
 
 class InventoryPage(BasePage):
     """
-    Page Object Model para la página de Catálogo (inventory.html).
-    Contiene métodos y localizadores para la Consigna 2 y 3.
+    Page Object para la página de Catálogo/Inventario después del login.
+    Hereda de BasePage para usar métodos comunes de Selenium.
     """
     
-    # --- Localizadores Comunes de UI ---
+    # --- LOCATORS ---
     
-    HEADER_MENU_BUTTON = (By.ID, "react-burger-menu-btn")
-    SORT_CONTAINER = (By.CLASS_NAME, "product_sort_container")
-    CART_ICON = (By.CLASS_NAME, "shopping_cart_link")
-    CART_BADGE = (By.CLASS_NAME, "shopping_cart_badge")
+    # Elementos de validación de la página
+    INVENTORY_CONTAINER = (By.ID, "inventory_container")
+    TITLE_INVENTORY = (By.CLASS_NAME, "title")
     
-    # --- Localizadores de Productos ---
+    # Producto 1
+    # CORRECCIÓN 1: Se cambia a By.ID para mayor robustez y velocidad (resuelve TimeoutException en Test 02)
+    FIRST_PRODUCT_NAME = (By.ID, "item_4_title_link") 
+    FIRST_PRODUCT_PRICE = (By.XPATH, "(//div[@class='inventory_item_price'])[1]")
     
-    PRODUCT_ITEM = (By.CLASS_NAME, "inventory_item")
-    
-    # Localizadores para el primer producto (Sauce Labs Backpack, ID 4)
-    FIRST_PRODUCT_NAME_LINK = (By.ID, "item_4_title_link") 
-    FIRST_PRODUCT_PRICE = (By.XPATH, "//a[@id='item_4_title_link']/ancestor::div[@class='inventory_item_label']/following-sibling::div//div[@class='inventory_item_price']")
-    
-    # Localizadores de botones 'Add to Cart' para la Consigna 3
+    # Botones para añadir productos específicos
     ADD_TO_CART_BACKPACK = (By.ID, "add-to-cart-sauce-labs-backpack")
     ADD_TO_CART_BIKE_LIGHT = (By.ID, "add-to-cart-sauce-labs-bike-light")
     
-    def __init__(self, driver):
-        super().__init__(driver)
+    # Carrito
+    CART_BADGE = (By.CLASS_NAME, "shopping_cart_badge")
+    CART_ICON = (By.CLASS_NAME, "shopping_cart_link")
 
-    # ====================================================================
-    # --- MÉTODOS DE LA CONSIGNAS 2: VERIFICACIÓN DE CATÁLOGO ---
-    # ====================================================================
+    # --- Métodos de Interacción ---
 
     def is_inventory_visible(self):
-        """Verifica la existencia de al menos un producto, esperando que el primero sea visible."""
+        """
+        Verifica si la página de inventario se cargó correctamente buscando el título.
+        """
         try:
-            # Espera explícita sobre un elemento clave del catálogo
-            self.wait_for_visibility(self.FIRST_PRODUCT_NAME_LINK, timeout=5)
-            return True
-        except:
+            element = self.wait_for_visibility(self.TITLE_INVENTORY)
+            return element.text == "Products"
+        except Exception:
+            logging.error("No se pudo verificar la visibilidad del inventario.")
             return False
 
-    def are_ui_elements_present(self):
-        """Verifica la presencia de elementos importantes de la interfaz (menú y filtros)."""
-        # Se asegura de que los elementos sean visibles antes de comprobar su estado.
-        self.wait_for_visibility(self.HEADER_MENU_BUTTON, timeout=5)
-        self.wait_for_visibility(self.SORT_CONTAINER, timeout=5)
-        
-        menu_present = self.find_element(self.HEADER_MENU_BUTTON).is_displayed()
-        sort_present = self.find_element(self.SORT_CONTAINER).is_displayed()
-        return menu_present and sort_present
-        
     def get_first_product_details(self):
-        """Obtiene y retorna el nombre y precio del primer producto."""
+        """
+        Obtiene el nombre y precio del primer producto listado.
+        """
+        logging.info("Obteniendo detalles del primer producto.")
         
-        # Se garantiza que el elemento está cargado antes de leer su texto
-        self.wait_for_visibility(self.FIRST_PRODUCT_NAME_LINK, timeout=5) 
+        # El método find_element ya usa self.wait.until(EC.presence_of_element_located)
+        name_element = self.find_element(self.FIRST_PRODUCT_NAME)
+        price_element = self.find_element(self.FIRST_PRODUCT_PRICE)
         
-        name = self.find_element(self.FIRST_PRODUCT_NAME_LINK).text 
-        price = self.find_element(self.FIRST_PRODUCT_PRICE).text
-        
-        return f"Nombre: {name}, Precio: {price}"
+        return {
+            'nombre': name_element.text,
+            'precio': price_element.text
+        }
 
-    # ====================================================================
-    # --- MÉTODOS DE LA CONSIGNAS 3: INTERACCIÓN CON CARRITO ---
-    # ====================================================================
-        
     def add_two_items_to_cart(self):
-        """Añade la Mochila y la Linterna al carrito y retorna el contador."""
-        
+        """
+        Añade la Mochila y la Linterna al carrito y retorna el contador (badge).
+        """
+        logging.info("Añadiendo dos productos al carrito.")
+
         # 1. Añadir el primer producto
         self.find_element(self.ADD_TO_CART_BACKPACK).click()
-        
+
         # 2. Añadir el segundo producto
         self.find_element(self.ADD_TO_CART_BIKE_LIGHT).click()
+
+        # 3. Obtener el texto del contador del carrito. 
+        # CORRECCIÓN 2: Eliminación de 'timeout=2' para evitar el TypeError
+        self.wait_for_visibility(self.CART_BADGE)
         
-        # 3. Obtener el texto del contador del carrito. Se añade espera por si la actualización es lenta.
-        self.wait_for_visibility(self.CART_BADGE, timeout=2)
-        return self.find_element(self.CART_BADGE).text
+        badge_element = self.find_element(self.CART_BADGE)
+        return badge_element.text
         
-    def navigate_to_cart(self):
-        """Hace clic en el icono del carrito."""
-        self.find_element(self.CART_ICON).click()
+    def go_to_cart(self):
+        """
+        Navega a la página del carrito de compras.
+        """
+        logging.info("Navegando al carrito de compras.")
+        self.click_element(self.CART_ICON)

@@ -1,62 +1,67 @@
-# 🐍 Pre-Entrega: Automatización de E-commerce - SauceDemo
+# 🚀 Proyecto Final de Automatización de Pruebas - Ezequiel Cañete
 
-## 1. Propósito del Proyecto
+Este proyecto consiste en un **Framework de Automatización de Pruebas** integral desarrollado en Python, siguiendo el patrón Page Object Model (POM).
 
-El objetivo de este proyecto es aplicar los conocimientos de automatización de pruebas adquiridos, utilizando el patrón **Page Object Model (POM)**. Se automatizan flujos clave de navegación y compra en el sitio demo `www.saucedemo.com`, demostrando la capacidad de interactuar con elementos web, manejar aserciones y generar reportes de ejecución.
+El framework automatiza tanto la interfaz de usuario (UI) como los servicios de una API, demostrando una cobertura completa del flujo de negocio.
 
-## 2. Tecnologías y Herramientas Utilizadas
+## [cite_start]🎯 Propósito del Proyecto [cite: 73]
 
-Este proyecto fue desarrollado utilizando las siguientes tecnologías, cumpliendo con las consignas:
+El objetivo principal de este framework es:
+1.  [cite_start]**Automatizar Pruebas de UI** para validar el flujo completo de compra en el sitio **SauceDemo.com** (Login, Navegación, Añadir al Carrito y Checkout)[cite: 27, 28].
+2.  [cite_start]**Automatizar Pruebas de API** para verificar el correcto funcionamiento de los endpoints críticos (GET, POST, PUT) de la API **Reqres.in**[cite: 45].
+3.  [cite_start]Implementar el patrón **Page Object Model (POM)** para crear un código modular, mantenible y escalable[cite: 20].
+4.  [cite_start]Generar un **Reporte HTML detallado** y sistemático con capturas de pantalla de los fallos para la trazabilidad de los resultados[cite: 52, 54].
 
-| Tecnología | Propósito |
+---
+
+## [cite_start]🛠️ Tecnologías Utilizadas [cite: 74]
+
+| Tecnología | Rol |
 | :--- | :--- |
-| **Python 3.x** | Lenguaje de programación principal. |
-| **Pytest** | Framework de pruebas para estructurar y ejecutar los casos de prueba. |
-| **Selenium WebDriver** | Biblioteca para interactuar y automatizar el navegador. |
-| **WebDriver Manager** | Para manejar automáticamente la descarga y configuración del Chrome Driver. |
-| **pytest-html** | Plugin para generar reportes detallados en formato HTML. |
-| **Git & GitHub** | Sistema de control de versiones y repositorio público. |
+| **Python 3.x** | [cite_start]Lenguaje de programación principal [cite: 11] |
+| **Pytest** | [cite_start]Framework de testing para la gestión y ejecución de pruebas [cite: 12] |
+| **Selenium WebDriver** | [cite_start]Automatización de la interfaz de usuario (Pruebas UI) [cite: 13] |
+| **Requests** | [cite_start]Biblioteca para realizar peticiones HTTP (Pruebas API) [cite: 14] |
+| **Page Object Model** | [cite_start]Patrón de diseño para la organización y mantenimiento del código UI [cite: 20] |
+| **Pytest-HTML** | [cite_start]Generación de reportes visuales detallados [cite: 51, 52] |
+| **Git & GitHub** | [cite_start]Control de versiones y repositorio de código [cite: 15, 16] |
 
-***
+---
 
-## 3. Estructura del Proyecto
+## [cite_start]📁 Estructura del Proyecto [cite: 76]
 
-El proyecto sigue una estructura limpia y modular basada en el patrón POM, lo que garantiza la reusabilidad y mantenibilidad del código:
+El proyecto sigue una estructura modular para separar la lógica de negocio, las pruebas y los datos:
 
-***
+---
 
-## 4. Configuración e Instalación de Dependencias
+## ⚙️ Instalación de Dependencias
 
-Para ejecutar las pruebas localmente, sigue estos pasos:
+Para ejecutar este proyecto, necesitas tener **Python 3.x** y **Git** instalados en tu sistema.
 
-1.  **Clonar el Repositorio:**
+1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://www.youtube.com/watch?v=dnxdIzF8p3k](https://www.youtube.com/watch?v=dnxdIzF8p3k)
-    cd [nombre del repositorio]
+    git clone [https://github.com/LawPotatoes/pre-entrega-automation-testing-ezequiel-ca-ete](https://github.com/LawPotatoes/pre-entrega-automation-testing-ezequiel-ca-ete)
+    cd pre-entrega-automation-testing-ezequiel-cañete
     ```
+    *(Nota: Reemplaza la URL del repositorio si es necesario)*
 
-2.  **Crear un Entorno Virtual (Recomendado):**
-    ```bash
-    python -m venv venv
-    # Activar entorno virtual (Windows)
-    .\venv\Scripts\activate
-    # Activar entorno virtual (macOS/Linux)
-    # source venv/bin/activate 
-    ```
-
-3.  **Instalar Dependencias:**
-    Instala todas las librerías necesarias (incluyendo Selenium, Pytest y `pytest-html`):
+2.  **Instalar las bibliotecas requeridas:**
+    Este comando instalará Pytest, Selenium, Requests y todas las demás dependencias listadas en el archivo `requirements.txt`[cite: 77].
     ```bash
     pip install -r requirements.txt
     ```
 
-***
+---
 
-## 5. Ejecución de las Pruebas
+## ▶️ Ejecución de las Pruebas
 
-### Comando para Ejecutar las Pruebas
+El framework se ejecuta utilizando el comando de `pytest`, que automáticamente genera el reporte HTML en la carpeta `reports/`[cite: 78].
 
-Ejecuta todas las pruebas en el archivo `test_saucedemo.py` con el siguiente comando, asegurándote de estar en la carpeta raíz del proyecto y de tener el entorno virtual activo:
+### Ejecutar todas las pruebas (UI y API)
+
+Utiliza este comando para ejecutar todas las pruebas y generar el reporte final:
 
 ```bash
-pytest -v
+pytest -v --html=reports/reporte.html --self-contained-html
+
+
